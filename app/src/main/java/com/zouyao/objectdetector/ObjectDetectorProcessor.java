@@ -181,11 +181,8 @@ public class ObjectDetectorProcessor implements FrameProcessor {
         /**
          * Null-object for {@link OnObjectsDetectedListener}.
          */
-        OnObjectsDetectedListener NULL = new OnObjectsDetectedListener() {
-            @Override
-            public void onObjectsDetected(List<Recognition> faces) {
-                // Do nothing
-            }
+        OnObjectsDetectedListener NULL = faces -> {
+            // Do nothing
         };
 
         /**

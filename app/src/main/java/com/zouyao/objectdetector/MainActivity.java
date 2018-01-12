@@ -1,12 +1,20 @@
 package com.zouyao.objectdetector;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import io.fotoapparat.Fotoapparat;
@@ -15,6 +23,7 @@ import com.zouyao.objectdetector.view.RecognitionView;
 
 import io.fotoapparat.parameter.LensPosition;
 import io.fotoapparat.parameter.ScaleType;
+import io.fotoapparat.result.PhotoResult;
 import io.fotoapparat.view.CameraView;
 
 import static io.fotoapparat.log.Loggers.fileLogger;
@@ -40,14 +49,16 @@ public class MainActivity extends AppCompatActivity {
     private RecognitionView recognitionView;
     private Fotoapparat camera;
     private ObjectDetectorProcessor objectDetectorProcessor = null;
+    private FloatingActionButton takePictureBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cameraView = (CameraView) findViewById(R.id.camera_view);
-        recognitionView = (RecognitionView) findViewById(R.id.recognitionView);
+        cameraView = findViewById(R.id.camera_view);
+        recognitionView = findViewById(R.id.recognition_view);
+        takePictureBottom = findViewById(R.id.take_picture_button);
         hasCameraPermission = permissionsDelegate.hasCameraPermission();
 
         if (hasCameraPermission) {
@@ -71,6 +82,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         camera = createFotoapparat();
+        takePictureBottom.setOnClickListener((view) -> {
+            PhotoResult photoResult = camera.takePicture();
+
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+            File imagesFolder = getExternalFilesDir(Environment.DIRECTORY_DCIM);
+            Log.i(TAG, "image folder is " + Environment.DIRECTORY_DCIM);
+
+
+            File image = new File(imagesFolder, timeStamp + ".png");
+            photoResult.saveToFile(image).whenDone((result) -> {
+                Toast toast = Toast.makeText(MainActivity.this,
+                        "saved to file " + image.getAbsolutePath(), Toast.LENGTH_SHORT);
+                toast.show();
+            });
+        });
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 

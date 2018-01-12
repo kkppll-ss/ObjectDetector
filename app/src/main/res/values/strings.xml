@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ObjectDetector</string>
+    <string name="no_camera_permission_granted">No Camera permission granted.</string>
 </resources>
