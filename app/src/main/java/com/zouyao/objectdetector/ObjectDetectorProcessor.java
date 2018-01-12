@@ -88,8 +88,14 @@ public class ObjectDetectorProcessor implements FrameProcessor {
         Bitmap resizedImage = Bitmap.createBitmap(image, 0, 0,
                 image.getWidth(), image.getHeight(), matrix, false);
 
-        Bitmap recognitionImage = Bitmap.createScaledBitmap(resizedImage, INPUT_SIZE, INPUT_SIZE, false);
+        int inWidth = resizedImage.getWidth();
+        int inHeight = resizedImage.getHeight();
 
+
+        Bitmap recognitionImage = Bitmap.createBitmap(INPUT_SIZE, INPUT_SIZE, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(recognitionImage);
+        canvas.drawARGB(255, 255, 255, 255);
+        canvas.drawBitmap(resizedImage, 0, 0, null);
         Log.i(TAG, "rotation = " + rotation + " x scale = " + (double)image.getWidth() / INPUT_SIZE
         + " y scale = " + (double)image.getHeight() / INPUT_SIZE);
         final List<Recognition> faces = objectDetector.recognizeImage(recognitionImage);
@@ -99,10 +105,10 @@ public class ObjectDetectorProcessor implements FrameProcessor {
         {
             if (face.getConfidence() >= MINIMUM_CONFIDENCE) {
                 RectF location = face.getLocation();
-                float left = location.left / INPUT_SIZE;
-                float right = location.right / INPUT_SIZE;
-                float top = location.top / INPUT_SIZE;
-                float bottom = location.bottom / INPUT_SIZE;
+                float left = location.left / inWidth;
+                float right = location.right / inWidth;
+                float top = location.top / inHeight;
+                float bottom = location.bottom / inHeight;
                 results.add(new Recognition(
                         face.getId(),
                         face.getTitle(),
@@ -155,7 +161,8 @@ public class ObjectDetectorProcessor implements FrameProcessor {
         if (inWidth != dstWidth || inHeight != dstHeight) {
             final float scaleFactorX = dstWidth / (float) inWidth;
             final float scaleFactorY = dstHeight / (float) inHeight;
-            matrix.postScale(scaleFactorX, scaleFactorY);
+            final float scaleFactor = Math.min(scaleFactorX, scaleFactorY);
+            matrix.postScale(scaleFactor, scaleFactor);
         }
 
         if (applyRotation != 0) {
