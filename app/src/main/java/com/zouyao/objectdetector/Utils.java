@@ -99,7 +99,7 @@ public class Utils {
     }
 
 
-    public static synchronized List<Recognition>
+    public static List<Recognition>
     getRecognitionResult (ObjectDetector objectDetector, Bitmap image,
                           int frameRotation, float minimumConfidence){
         int inputSize = ObjectDetector.INPUT_SIZE;

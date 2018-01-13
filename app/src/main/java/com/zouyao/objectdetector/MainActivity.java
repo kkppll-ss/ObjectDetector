@@ -71,8 +71,14 @@ public class MainActivity extends AppCompatActivity {
             int rotation = Utils.getRotation(frameRotation);
             Matrix matrix = new Matrix();
             matrix.setRotate(rotation);
-            Bitmap rotatedBitmap = Bitmap.createBitmap(
-                    bitmap , 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+            Bitmap rotatedBitmap = null;
+            if (rotation != 0) {
+                 rotatedBitmap = Bitmap.createBitmap(
+                        bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+            }
+            else {
+                rotatedBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            }
             Canvas canvas = new Canvas(rotatedBitmap);
             Paint rectPaint = new Paint();
             Paint textPaint = new Paint();
