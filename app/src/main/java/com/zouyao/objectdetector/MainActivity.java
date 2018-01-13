@@ -3,6 +3,7 @@ package com.zouyao.objectdetector;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -69,12 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             objectDetectorProcessor = ObjectDetectorProcessor.with(this)
-                    .listener(new ObjectDetectorProcessor.OnObjectsDetectedListener() {
-                        @Override
-                        public void onObjectsDetected(List<Recognition> faces) {
-                            recognitionView.setRecognitions(faces);
-                        }
-                    })
+                    .listener(faces -> recognitionView.setRecognitions(faces))
                     .build();
         } catch (IOException e) {
             e.printStackTrace();

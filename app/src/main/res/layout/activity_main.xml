@@ -49,7 +49,11 @@
         <com.zouyao.objectdetector.view.RecognitionView
             android:id="@+id/recognition_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            app:textSize="15sp"
+            app:textColor="@color/colorText"
+            app:rectColor="@color/colorRect"
+            app:rectStrokeWidth="2dp"/>
 
     </com.zouyao.objectdetector.view.CameraOverlayLayout>
 

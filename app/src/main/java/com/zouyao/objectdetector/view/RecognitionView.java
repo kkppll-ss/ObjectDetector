@@ -1,6 +1,7 @@
 package com.zouyao.objectdetector.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -14,6 +15,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zouyao.objectdetector.R;
 import com.zouyao.objectdetector.Recognition;
 
 
@@ -34,26 +36,35 @@ public class RecognitionView extends View {
 
     public RecognitionView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        rectPaint.setColor(0xffff0000);
-        rectPaint.setStyle(Paint.Style.STROKE);
-        rectPaint.setStrokeWidth(5);
-
-        textPaint.setTextSize(textSize);
-        textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setColor(0xff00ff00);
-        textPaint.setTextAlign(Paint.Align.CENTER);
+        applyAttributes(context, attrs);
     }
 
     public RecognitionView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        rectPaint.setColor(0xffff0000);
-        rectPaint.setStyle(Paint.Style.STROKE);
-        rectPaint.setStrokeWidth(5);
+        applyAttributes(context, attrs);
+    }
 
-        textPaint.setTextSize(textSize);
+    private void applyAttributes(Context context, @Nullable AttributeSet attrs) {
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RecognitionView);
+        rectPaint.setStyle(Paint.Style.STROKE);
         textPaint.setStyle(Paint.Style.FILL);
-        textPaint.setColor(0xff00ff00);
         textPaint.setTextAlign(Paint.Align.CENTER);
+
+        try {
+            rectPaint.setColor(array.getColor(
+                    R.styleable.RecognitionView_rectColor, 0xffff0000));
+            rectPaint.setStrokeWidth(array.getDimension(
+                    R.styleable.RecognitionView_rectStrokeWidth, 5));
+
+            textPaint.setTextSize(array.getDimension(
+                    R.styleable.RecognitionView_textSize, 20));
+
+            textPaint.setColor(array.getColor(
+                    R.styleable.RecognitionView_textColor, 0xff00ff00));
+        }finally {
+            array.recycle();
+        }
+
     }
 
     /**
