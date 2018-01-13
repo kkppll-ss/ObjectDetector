@@ -24,7 +24,11 @@ import com.zouyao.objectdetector.Recognition;
  */
 public class RecognitionView extends View {
     private final static String TAG = "RecognitionView";
-    private final static int textSize = 40;
+    private final static int TEXT_TOP = 0;
+    private final static int TEXT_BOTTOM = 1;
+
+    private float textSize;
+    private int textPosition;
 
     private final List<Recognition> recognitions = new ArrayList<>();
     private Paint rectPaint = new Paint();
@@ -55,9 +59,12 @@ public class RecognitionView extends View {
                     R.styleable.RecognitionView_rectColor, 0xffff0000));
             rectPaint.setStrokeWidth(array.getDimension(
                     R.styleable.RecognitionView_rectStrokeWidth, 5));
-
-            textPaint.setTextSize(array.getDimension(
-                    R.styleable.RecognitionView_textSize, 20));
+            textSize = array.getDimension(
+                    R.styleable.RecognitionView_textSize, 20);
+            textPaint.setTextSize(textSize);
+            textPosition = array.getInteger(
+                    R.styleable.RecognitionView_textPosition, TEXT_BOTTOM
+            );
 
             textPaint.setColor(array.getColor(
                     R.styleable.RecognitionView_textColor, 0xff00ff00));
@@ -100,7 +107,12 @@ public class RecognitionView extends View {
             String title = recognition.getTitle();
             Float confidence = recognition.getConfidence();
             String text = String.format("%s: (%.1f%%) ", title, confidence * 100.0f);
-            canvas.drawText(text, middle, bottom - textSize, textPaint);
+            if (textPosition == TEXT_BOTTOM){
+                canvas.drawText(text, middle, bottom - textSize / 2, textPaint);
+            }
+            else {
+                canvas.drawText(text, middle, top + textSize, textPaint);
+            }
         }
     }
 

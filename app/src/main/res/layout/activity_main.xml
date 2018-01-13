@@ -53,7 +53,8 @@
             app:textSize="15sp"
             app:textColor="@color/colorText"
             app:rectColor="@color/colorRect"
-            app:rectStrokeWidth="2dp"/>
+            app:rectStrokeWidth="2dp"
+            app:textPosition="top"/>
 
     </com.zouyao.objectdetector.view.CameraOverlayLayout>
 

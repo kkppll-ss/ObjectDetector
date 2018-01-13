@@ -5,5 +5,9 @@
         <attr name="rectStrokeWidth" format="dimension" />
         <attr name="textColor" format="color"/>
         <attr name="textSize" format="dimension"/>
+        <attr name="textPosition" format="enum">
+            <enum name="top" value="0" />
+            <enum name="bottom" value="1"/>
+        </attr>
     </declare-styleable>
 </resources>
