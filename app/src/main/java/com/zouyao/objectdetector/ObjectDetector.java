@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
-import android.os.Trace;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -49,15 +48,7 @@ public class ObjectDetector {
     private int inputSize;
     // Pre-allocated buffers.
     private Vector<String> labels = new Vector<>();
-    private int[] intValues;
-    private byte[] byteValues;
-    private float[] outputLocations;
-    private float[] outputScores;
-    private float[] outputClasses;
-    private float[] outputNumDetections;
     private String[] outputNames;
-
-    private boolean logStats = false;
 
     private TensorFlowInferenceInterface inferenceInterface;
 
@@ -85,7 +76,7 @@ public class ObjectDetector {
             br.close();
         }catch (IOException e){
             Toast toast = Toast.makeText(
-                    context, "connot read assets, reinstall the app", Toast.LENGTH_SHORT);
+                    context, "cannot read assets, reinstall the app", Toast.LENGTH_SHORT);
             toast.show();
         }
 
@@ -121,19 +112,13 @@ public class ObjectDetector {
         // Pre-allocate buffers.
         this.outputNames = new String[]{"detection_boxes", "detection_scores",
                 "detection_classes", "num_detections"};
-        this.intValues = new int[this.inputSize * this.inputSize];
-        this.byteValues = new byte[this.inputSize * this.inputSize * 3];
-        this.outputScores = new float[MAX_RESULTS];
-        this.outputLocations = new float[MAX_RESULTS * 4];
-        this.outputClasses = new float[MAX_RESULTS];
-        this.outputNumDetections = new float[1];
+
     }
 
     public synchronized List<Recognition> recognizeImage(final Bitmap bitmap) {
-        // Log this method so that it can be analyzed getBuilder systrace.
-        Trace.beginSection("recognizeImage");
 
-        Trace.beginSection("preprocessBitmap");
+        int []intValues = new int[this.inputSize * this.inputSize];
+        byte []byteValues = new byte[this.inputSize * this.inputSize * 3];
         // Preprocess the image data from 0-255 int to normalized float based
         // on the provided parameters.
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -143,29 +128,23 @@ public class ObjectDetector {
             byteValues[i * 3 + 1] = (byte) ((intValues[i] >> 8) & 0xFF);
             byteValues[i * 3 + 0] = (byte) ((intValues[i] >> 16) & 0xFF);
         }
-        Trace.endSection(); // preprocessBitmap
 
         // Copy the input data into TensorFlow.
-        Trace.beginSection("feed");
+
         inferenceInterface.feed(inputName, byteValues, 1, inputSize, inputSize, 3);
-        Trace.endSection();
 
         // Run the inference call.
-        Trace.beginSection("run");
-        inferenceInterface.run(outputNames, logStats);
-        Trace.endSection();
+        inferenceInterface.run(outputNames, false);
 
         // Copy the output Tensor back into the output array.
-        Trace.beginSection("fetch");
-        outputLocations = new float[MAX_RESULTS * 4];
-        outputScores = new float[MAX_RESULTS];
-        outputClasses = new float[MAX_RESULTS];
-        outputNumDetections = new float[1];
+        float []outputLocations = new float[MAX_RESULTS * 4];
+        float []outputScores = new float[MAX_RESULTS];
+        float []outputClasses = new float[MAX_RESULTS];
+        float []outputNumDetections = new float[1];
         inferenceInterface.fetch(outputNames[0], outputLocations);
         inferenceInterface.fetch(outputNames[1], outputScores);
         inferenceInterface.fetch(outputNames[2], outputClasses);
         inferenceInterface.fetch(outputNames[3], outputNumDetections);
-        Trace.endSection();
 
         // Find the best detections.
         final PriorityQueue<Recognition> pq =
@@ -192,7 +171,6 @@ public class ObjectDetector {
         for (int i = 0; i < Math.min(pq.size(), MAX_RESULTS); ++i) {
             recognitions.add(pq.poll());
         }
-        Trace.endSection(); // "recognizeImage"
         return recognitions;
     }
 
